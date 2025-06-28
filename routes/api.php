@@ -61,7 +61,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('transaction-types', TransactionTypeController::class);
     //route laporan
     Route::get('laporantransaksi', [LaporanController::class, 'laporantransaksi']);
-    Route::get('/laporan-transaksi/export-pdfs', [LaporanController::class, 'generateTransaksiReportPdf'])->name('transactions.exportPdf');
+    Route::get('/laporan-transaksi/export-pdf', [LaporanController::class, 'generateTransaksiReportPdf'])->name('transactions.exportPdf');
     Route::get('/laporan-transaksi/export-pdf/{typeId}', [LaporanController::class, 'generateTransaksiTypeReportPdf'])->middleware('auth:api');
     Route::get('/laporan-transaksi/export-excel/{id}', [LaporanController::class, 'generateTransaksiTypeReportexcel']);
     Route::get('/laporan-transaksi/export-excel', [LaporanController::class, 'generateAllTransaksiexcel']);
@@ -83,6 +83,9 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::post('/otp/send', [LaporanController::class, 'send']);
     Route::post('/otp/verify', [LaporanController::class, 'verify']);
+    Route::get('/notifikasis', [NotifikasiController::class, 'index']);
+    Route::put('/notifikasis/{id}/read', [NotifikasiController::class, 'markAsRead']);
+    Route::put('/notifikasi/read-all', [NotifikasiController::class, 'markAllAsRead']);
 
     //barang
     Route::apiResource('barangs', BarangController::class);
@@ -167,6 +170,3 @@ Route::middleware(['auth:api'])->get('/check-roles', [UserController::class, 'ch
 
 Route::apiResource('webs', WebController::class);
 
-Route::get('/notifikasis', [NotifikasiController::class, 'index']);
-Route::put('/notifikasis/{id}/read', [NotifikasiController::class, 'markAsRead']);
-Route::put('/notifikasi/read-all', [NotifikasiController::class, 'markAllAsRead']);

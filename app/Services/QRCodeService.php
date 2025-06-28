@@ -152,3 +152,4 @@ class QRCodeService
     return ['message' => 'QR codes PDF generated successfully.', 'pdf_url' => asset('storage/' . $pdfPath)];
 }
 }
+

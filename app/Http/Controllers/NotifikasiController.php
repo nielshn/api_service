@@ -14,7 +14,29 @@ class NotifikasiController extends Controller
 {
     public function index()
     {
-        return response()->json(Notifikasi::where('read', false)->get());
+        $user = Auth::user();
+
+        if (!$user || !$user->role) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $role = strtolower($user->role->name);
+
+        if ($role === 'superadmin') {
+            // Ambil semua notifikasi belum dibaca
+            $notifikasi = Notifikasi::where('read', false)->orWhereNull('read')->get();
+        } elseif ($role === 'operator') {
+            $gudangIds = Gudang::where('user_id', $user->id)->pluck('id');
+
+            $notifikasi = Notifikasi::where(function ($query) use ($gudangIds) {
+                $query->where('read', false)
+                    ->orWhereNull('read');
+            })->whereIn('gudang_id', $gudangIds)->get();
+        } else {
+            $notifikasi = collect(); // Kosong untuk role lain
+        }
+
+        return response()->json($notifikasi);
     }
 
     public function markAsRead($id)
@@ -25,12 +47,12 @@ class NotifikasiController extends Controller
 
         return response()->json(['message' => 'Notifikasi sudah dibaca']);
     }
- public function markAllAsRead()
-{
-    Notifikasi::where('read', false)->update(['read' => true]);
+    public function markAllAsRead()
+    {
+        Notifikasi::where('read', false)->update(['read' => true]);
 
-    return response()->json(['message' => 'Semua notifikasi telah ditandai sebagai dibaca']);
-}
+        return response()->json(['message' => 'Semua notifikasi telah ditandai sebagai dibaca']);
+    }
     function checkStockAndNotify($barangId, $gudangId, $stokTersedia)
     {
         $barang = Barang::find($barangId);
@@ -55,7 +77,6 @@ class NotifikasiController extends Controller
 
             $barangGudang->update(['notified' => true]);
             event(new StockMinimumReached($title, $message, $barangId, $gudangId));
-
         } elseif ($stokTersedia <= $stokMinimum && !$barangGudang->notified) {
             $title = "Stok Barang Minimum Tercapai";
             $message = "Stok barang {$barang->barang_nama} di gudang {$gudang->name} telah mencapai batas minimum.";
@@ -77,5 +98,4 @@ class NotifikasiController extends Controller
             $barangGudang->update(['notified' => false]);
         }
     }
-
 }

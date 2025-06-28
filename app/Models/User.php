@@ -52,4 +52,9 @@ class User extends Authenticatable implements MustVerifyEmail
         $pendingEmail = Cache::get('pending_email_' . $this->id);
         return $pendingEmail ?: $this->email;
     }
+
+//     public function hasRole(string $roleName): bool
+// {
+//     return strtolower($this->role->name ?? '') === strtolower($roleName);
+// }
 }
