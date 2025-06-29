@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -29,7 +30,7 @@ class UserController extends Controller implements HasMiddleware
             'auth:api',
             new Middleware('permission:view_user', only: ['index', 'show']),
             new Middleware('permission:create_user', only: ['store']),
-            new Middleware('permission:update_user', only: ['update', 'changePassword']),
+            new Middleware('permission:update_user', only: ['updateUserByAdmin']),
             new Middleware('permission:delete_user', only: ['destroy', 'deleteAvatar']),
         ];
     }
