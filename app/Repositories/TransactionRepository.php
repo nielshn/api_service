@@ -270,113 +270,112 @@ class TransactionRepository
 
     public function updateTransactionWithDetailsByKode($kode, $request)
     {
-            DB::beginTransaction();
-    try {
-        // Ambil transaksi berdasarkan kode
-        $transaction = Transaction::where('transaction_code', $kode)->with('transactionDetails.barang')->first();
-        if (!$transaction) {
-            throw new Exception("Transaksi dengan kode {$kode} tidak ditemukan.");
-        }
-
-        // Pastikan batas waktu update < 24 jam
-        $transactionDate = $transaction->transaction_date instanceof \Carbon\Carbon
-            ? $transaction->transaction_date
-            : \Carbon\Carbon::parse($transaction->transaction_date);
-
-        if (now()->greaterThan($transactionDate->copy()->addHours(24))) {
-            throw new Exception('Transaksi hanya dapat diperbarui dalam waktu 24 jam setelah dibuat.');
-        }
-
-        // Tidak boleh ubah tipe transaksi
-        if (
-            isset($request->transaction_type_id) &&
-            $request->transaction_type_id != $transaction->transaction_type_id
-        ) {
-            throw new Exception('Tipe transaksi tidak boleh diubah pada update transaksi.');
-        }
-
-        $transactionTypeId = $transaction->transaction_type_id;
-
-        // Validasi items wajib ada
-        if (!isset($request->items) || !is_array($request->items) || count($request->items) === 0) {
-            throw new Exception('Daftar items transaksi tidak boleh kosong.');
-        }
-
-        // Cek apakah barang_kode diubah (tidak boleh)
-        $oldBarangKode = $transaction->transactionDetails->pluck('barang.barang_kode')->sort()->values()->toArray();
-        $newBarangKode = collect($request->items)->pluck('barang_kode')->sort()->values()->toArray();
-
-        if ($oldBarangKode !== $newBarangKode) {
-            throw new Exception('Barang tidak boleh diubah. Gunakan hanya barang yang sama seperti sebelumnya.');
-        }
-
-        $gudangId = $this->getGudangIdByUserId($transaction->user_id);
-
-        // Validasi semua item
-        foreach ($request->items as $i => $item) {
-            // Validasi kode
-            if (empty($item['barang_kode'])) {
-                throw new Exception("Item ke-" . ($i + 1) . ": kode barang tidak boleh kosong.");
+        DB::beginTransaction();
+        try {
+            // Ambil transaksi berdasarkan kode
+            $transaction = Transaction::where('transaction_code', $kode)->with('transactionDetails.barang')->first();
+            if (!$transaction) {
+                throw new Exception("Transaksi dengan kode {$kode} tidak ditemukan.");
             }
 
-            // Validasi quantity
+            // Pastikan batas waktu update < 24 jam
+            $transactionDate = $transaction->transaction_date instanceof \Carbon\Carbon
+                ? $transaction->transaction_date
+                : \Carbon\Carbon::parse($transaction->transaction_date);
+
+            if (now()->greaterThan($transactionDate->copy()->addHours(24))) {
+                throw new Exception('Transaksi hanya dapat diperbarui dalam waktu 24 jam setelah dibuat.');
+            }
+
+            // Tidak boleh ubah tipe transaksi
             if (
-                !isset($item['quantity']) ||
-                !is_numeric($item['quantity']) ||
-                $item['quantity'] < 1
+                isset($request->transaction_type_id) &&
+                $request->transaction_type_id != $transaction->transaction_type_id
             ) {
-                throw new Exception("Item ke-" . ($i + 1) . ": quantity harus lebih dari 0.");
+                throw new Exception('Tipe transaksi tidak boleh diubah pada update transaksi.');
             }
 
-            $barang = Barang::where('barang_kode', $item['barang_kode'])->first();
-            if (!$barang) {
-                throw new Exception("Item ke-" . ($i + 1) . ": Barang dengan kode {$item['barang_kode']} tidak ditemukan.");
+            $transactionTypeId = $transaction->transaction_type_id;
+
+            // Validasi items wajib ada
+            if (!isset($request->items) || !is_array($request->items) || count($request->items) === 0) {
+                throw new Exception('Daftar items transaksi tidak boleh kosong.');
             }
 
-            $barangGudang = BarangGudang::where('barang_id', $barang->id)
-                ->where('gudang_id', $gudangId)
-                ->first();
+            // Cek apakah barang_kode diubah (tidak boleh)
+            $oldBarangKode = $transaction->transactionDetails->pluck('barang.barang_kode')->sort()->values()->toArray();
+            $newBarangKode = collect($request->items)->pluck('barang_kode')->sort()->values()->toArray();
 
-            if (in_array($transactionTypeId, [2, 3, 4, 5, 6]) && !$barangGudang) {
-                throw new Exception("Item ke-" . ($i + 1) . ": Barang {$barang->barang_nama} belum tersedia di gudang.");
+            if ($oldBarangKode !== $newBarangKode) {
+                throw new Exception('Barang tidak boleh diubah. Gunakan hanya barang yang sama seperti sebelumnya.');
             }
 
-            $item['gudang_id'] = $gudangId;
-            $this->validateItemTransaction($barang, $barangGudang, $item, $transactionTypeId);
+            $gudangId = $this->getGudangIdByUserId($transaction->user_id);
+
+            // Validasi semua item
+            foreach ($request->items as $i => $item) {
+                // Validasi kode
+                if (empty($item['barang_kode'])) {
+                    throw new Exception("Item ke-" . ($i + 1) . ": kode barang tidak boleh kosong.");
+                }
+
+                // Validasi quantity
+                if (
+                    !isset($item['quantity']) ||
+                    !is_numeric($item['quantity']) ||
+                    $item['quantity'] < 1
+                ) {
+                    throw new Exception("Item ke-" . ($i + 1) . ": quantity harus lebih dari 0.");
+                }
+
+                $barang = Barang::where('barang_kode', $item['barang_kode'])->first();
+                if (!$barang) {
+                    throw new Exception("Item ke-" . ($i + 1) . ": Barang dengan kode {$item['barang_kode']} tidak ditemukan.");
+                }
+
+                $barangGudang = BarangGudang::where('barang_id', $barang->id)
+                    ->where('gudang_id', $gudangId)
+                    ->first();
+
+                if (in_array($transactionTypeId, [2, 3, 4, 5, 6]) && !$barangGudang) {
+                    throw new Exception("Item ke-" . ($i + 1) . ": Barang {$barang->barang_nama} belum tersedia di gudang.");
+                }
+
+                $item['gudang_id'] = $gudangId;
+                $this->validateItemTransaction($barang, $barangGudang, $item, $transactionTypeId);
+            }
+
+            // Update deskripsi
+            $transaction->update([
+                'description' => $request->description ?? $transaction->description,
+            ]);
+
+            // Rollback stok lama
+            foreach ($transaction->transactionDetails as $oldDetail) {
+                $barang = Barang::find($oldDetail->barang_id);
+                $item = [
+                    'barang_kode' => $barang->barang_kode,
+                    'quantity' => $oldDetail->quantity,
+                    'gudang_id' => $oldDetail->gudang_id,
+                ];
+                $this->rollbackTransactionItem($transactionTypeId, $barang, $item);
+            }
+
+            // Hapus semua detail lama
+            $transaction->transactionDetails()->delete();
+
+            // Proses ulang dan insert detail baru
+            foreach ($request->items as $item) {
+                $item['gudang_id'] = $gudangId;
+                $this->processTransactionItem($transaction->id, $item, $transactionTypeId);
+            }
+
+            DB::commit();
+            return $this->find($transaction->id);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
-
-        // Update deskripsi
-        $transaction->update([
-            'description' => $request->description ?? $transaction->description,
-        ]);
-
-        // Rollback stok lama
-        foreach ($transaction->transactionDetails as $oldDetail) {
-            $barang = Barang::find($oldDetail->barang_id);
-            $item = [
-                'barang_kode' => $barang->barang_kode,
-                'quantity' => $oldDetail->quantity,
-                'gudang_id' => $oldDetail->gudang_id,
-            ];
-            $this->rollbackTransactionItem($transactionTypeId, $barang, $item);
-        }
-
-        // Hapus semua detail lama
-        $transaction->transactionDetails()->delete();
-
-        // Proses ulang dan insert detail baru
-        foreach ($request->items as $item) {
-            $item['gudang_id'] = $gudangId;
-            $this->processTransactionItem($transaction->id, $item, $transactionTypeId);
-        }
-
-        DB::commit();
-        return $this->find($transaction->id);
-    } catch (\Exception $e) {
-        DB::rollBack();
-        throw $e;
-    }
-
     }
 
     /**

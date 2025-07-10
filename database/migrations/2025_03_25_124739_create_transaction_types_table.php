@@ -21,12 +21,42 @@ return new class extends Migration
         });
 
         DB::table('transaction_types')->insert([
-            ['name' => 'Barang Masuk', 'slug' => 'barang_masuk'],
-            ['name' => 'Barang Keluar', 'slug' => 'barang_keluar'],
-            ['name' => 'Peminjaman', 'slug' => 'peminjaman'],
-            ['name' => 'Pengembalian', 'slug' => 'pengembalian'],
-            ['name' => 'Maintenance', 'slug' => 'maintenance'],
-            ['name' => 'Selesai Maintenance', 'slug' => 'selesai_maintenance'],
+            [
+                'name' => 'Barang Masuk',
+                'slug' => 'barang_masuk',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Barang Keluar',
+                'slug' => 'barang_keluar',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Peminjaman',
+                'slug' => 'peminjaman',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Pengembalian',
+                'slug' => 'pengembalian',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Maintenance',
+                'slug' => 'maintenance',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Selesai Maintenance',
+                'slug' => 'selesai_maintenance',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 

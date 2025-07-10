@@ -21,8 +21,18 @@ return new class extends Migration
         });
 
         DB::table('barang_categories')->insert([
-            ['name' => 'habis pakai', 'slug' => 'habis-pakai', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Berulang kali pakai', 'slug' => 'berulang-kali-pakai', 'created_at' => now(), 'updated_at' => now()]
+            [
+                'name' => 'Habis Pakai',
+                'slug' => 'habis-pakai',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Berulang Kali Pakai',
+                'slug' => 'berulang-kali-pakai',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 

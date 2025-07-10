@@ -4310,16 +4310,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.45",
+            "version": "3.0.46",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "bd81b90d5963c6b9d87de50357585375223f4dd8"
+                "reference": "56483a7de62a6c2a6635e42e93b8a9e25d4f0ec6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/bd81b90d5963c6b9d87de50357585375223f4dd8",
-                "reference": "bd81b90d5963c6b9d87de50357585375223f4dd8",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/56483a7de62a6c2a6635e42e93b8a9e25d4f0ec6",
+                "reference": "56483a7de62a6c2a6635e42e93b8a9e25d4f0ec6",
                 "shasum": ""
             },
             "require": {
@@ -4400,7 +4400,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.45"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.46"
             },
             "funding": [
                 {
@@ -4416,7 +4416,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-06-22T22:54:43+00:00"
+            "time": "2025-06-26T16:29:55+00:00"
         },
         {
             "name": "psr/clock",
@@ -9237,16 +9237,16 @@
         },
         {
             "name": "laravel-lang/lang",
-            "version": "15.22.3",
+            "version": "15.22.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laravel-Lang/lang.git",
-                "reference": "602763d5a8c85cd1abcdc160e00da436cd000c97"
+                "reference": "8e42c4bb2c99f82bdc324b972a06c9f8a16d6114"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laravel-Lang/lang/zipball/602763d5a8c85cd1abcdc160e00da436cd000c97",
-                "reference": "602763d5a8c85cd1abcdc160e00da436cd000c97",
+                "url": "https://api.github.com/repos/Laravel-Lang/lang/zipball/8e42c4bb2c99f82bdc324b972a06c9f8a16d6114",
+                "reference": "8e42c4bb2c99f82bdc324b972a06c9f8a16d6114",
                 "shasum": ""
             },
             "require": {
@@ -9296,7 +9296,7 @@
                 "issues": "https://github.com/Laravel-Lang/lang/issues",
                 "source": "https://github.com/Laravel-Lang/lang"
             },
-            "time": "2025-06-27T08:03:42+00:00"
+            "time": "2025-07-01T03:27:22+00:00"
         },
         {
             "name": "laravel-lang/locale-list",
